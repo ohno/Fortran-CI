@@ -52,6 +52,5 @@ jobs:
         run: |
           $FC -c src/add.f90 -o add.o
           $FC test/add.f90 add.o -o test_add
-
       - name: Run add test
         run: ./test_add
