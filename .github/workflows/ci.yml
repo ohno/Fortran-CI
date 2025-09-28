@@ -1,2 +1,56 @@
-- name: Setup Fortran
-  uses: fortran-lang/setup-fortran@v1.7.0
+# https://github.com/marketplace/actions/setup-fortran#usage
+name: CI
+
+on:
+  push:
+  workflow_dispatch:
+
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        toolchain:
+          - {compiler: gcc, version: 'latest'}
+          - {compiler: intel, version: '2025.0'}
+          - {compiler: intel-classic, version: '2021.10'}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # set compiler
+      - uses: fortran-lang/setup-fortran@v1
+        id: setup-fortran
+        with:
+          compiler: ${{ matrix.toolchain.compiler }}
+          version:  ${{ matrix.toolchain.version }}
+      - name: Show FC
+        run: |
+          echo "FC=$FC"
+          $FC --version
+
+      # test hello.f90
+      - name: Build hello
+        run: $FC hello.f90 -o hello
+      - name: Run & test hello
+        run: |
+          out=$(./hello | xargs)
+          if [ "$out" != "Hello, World!" ]; then
+            echo "fail:"
+            echo "  Hello, World!"
+            echo "  '$out'"
+            exit 1
+          fi
+          echo "pass:"
+          echo "  Hello, World!"
+          echo "  '$out'"
+
+      # test add.f90
+      - name: Build add
+        run: |
+          $FC -c add.f90 -o add.o
+          $FC test/add.f90 add.o -o test_add
+
+      - name: Run add test
+        run: ./test_add
