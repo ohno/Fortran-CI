@@ -40,12 +40,12 @@ jobs:
           if [ "$out" != "Hello, World!" ]; then
             echo "fail:"
             echo "  Hello, World!"
-            echo "  '$out'"
+            echo "  $out"
             exit 1
           fi
           echo "pass:"
           echo "  Hello, World!"
-          echo "  '$out'"
+          echo "  $out"
 
       # test add.f90
       - name: Build add

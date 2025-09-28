@@ -9,7 +9,7 @@ program test_add
   end interface
 
   result = add(1, 1)
-  correct = 3
+  correct = 2
 
   if (result /= correct) then
     print *, "fail", result, correct
